@@ -8,7 +8,8 @@ c_P_dry = 1005.7
 c_v_dry = 718
 eps = 0.6220
 k_dry = 0.2854
-
+c_L = 4181.3
+L_v = 2.5E-6
 
 def sat_vapor_pressure(T):
     '''Takes a temperature (C) and returns saturation vapor pressure (hPa) via eqn 10 (Bolton, 1980)'''
@@ -54,3 +55,12 @@ def theta_ep_field(T, P, P_0 = 1000.0):
     w = sat_mixing_ratio(P,T)
     theta_ep = pseudoeq_potential_T(T, P, w, P_0)
     return theta_ep
+def equiv_potential_T(T, P, P_0 = 1000.):
+    '''Takes temperature (C), pressure (hPa) and reference pressure (hPa) and returns equivalent potential temperature (K).  The calculation for mixing ratio (kg/kg) is included in this definition and need not be an input.'''
+    e = 0.
+    e_s = sat_vapor_pressure(T)
+    w_s = sat_mixing_ratio(P, T)
+    w_t = w_s 
+    c_wd = c_p_dry + w_t*c_L
+    theta_e = (T+C_to_K)*(P_0/(P-e))**(R_d/c_wd)*np.exp((L_v*w_t)/(c_wd*(T+C_to_K)))
+    return theta_e
